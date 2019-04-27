@@ -1,0 +1,13 @@
+.DS_Store
+.idea/
+.venv/
+100K/
+10M/
+1M/
+20M/
+data/
+log/
+*.pkl
+*.pyc
+*.png
+*.csv
