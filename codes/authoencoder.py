@@ -129,7 +129,6 @@ class AutoEncoder(object):
 
             # Cycle through batches
             for i, batch in enumerate(self.dataloader):
-
                 self.reset(train=True)
                 if self.cuda_enable:
                     input_tensor = batch['input'].cuda()

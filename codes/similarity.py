@@ -1,6 +1,7 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import euclidean_distances
 import pandas as pd
+import ipdb
 
 class SimilarityPredictions(object):
     def __init__(self, embeddings, similarity_metric='cosine'):
@@ -27,14 +28,15 @@ class SimilarityPredictions(object):
         similarity_matrix.columns = self.ids
         return similarity_matrix
 
-    def predict_similar_items(self, seed_item, n):
+    def predict_similar_items(self, seed_item, n, method):
         similar_items = pd.DataFrame(self.similarity_matrix.loc[seed_item])
-        similar_items.columns = ["similarity_score"]
+        col_name = "similarity_score_{}".format(method)
+        similar_items.columns = [col_name]
         if self.similarity_metric == 'cosine':
-            similar_items = similar_items.sort_values('similarity_score', ascending=False)
+            similar_items = similar_items.sort_values(col_name, ascending=False)
         if self.similarity_metric == 'euclidean':
-            similar_items = similar_items.sort_values('similarity_score', ascending=True)
+            similar_items = similar_items.sort_values(col_name, ascending=True)
         similar_items = similar_items.head(n)
         similar_items.reset_index(inplace=True)
         similar_items = similar_items.rename(index=str, columns={"index": "item_id"})
-        return similar_items.to_dict()
+        return similar_items

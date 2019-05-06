@@ -66,8 +66,8 @@ class CollaborativeFiltering(object):
             losses, latent_np = self.get_authoencoder_embedings(feature_df)
             latent_df = pd.DataFrame(latent_np, index=self.ids)
             log("Info", "shape: {}".format(latent_df.shape))
-            save_embeddings(losses, 'result/collaborative_losses.pkl', 'pickle')
+            # save_embeddings(losses, 'result/collaborative_losses.pkl', 'pickle')
         else:
             raise AssertionError("Please specify a correct method [svd, ae]")
 
-        save_data(latent_df, 'result/collaborative_embeddings_{}.pkl'.format(method))
+        # save_data(latent_df, 'result/collaborative_embeddings_{}.pkl'.format(method))
