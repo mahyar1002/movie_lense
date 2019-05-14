@@ -9,16 +9,21 @@ from authoencoder import AutoEncoder
 
 
 class CollaborativeFiltering(object):
-    def __init__(self, ratings_df):
+    def __init__(self, ratings_df, type='item'):
         self.ratings_df = ratings_df
         self.ids = None
+        self.type = type
         # self.movies = ratings_df.index.tolist()
         # self.users = ratings_df.columns.tolist()
 
     def create_rating_matrix(self):
         # convert the ratings data file to a pandas dataframe
         log('Info', "###### Pivoting Ratings ######")
-        ratings_df_matrix = self.ratings_df.pivot(index='movieId', columns='userId', values='rating').fillna(0)
+        if self.type == 'item':
+            ratings_df_matrix = self.ratings_df.pivot(index='movieId', columns='userId', values='rating').fillna(0)
+        else:
+            ratings_df_matrix = self.ratings_df.pivot(index='userId', columns='movieId', values='rating').fillna(0)
+
         self.ids = ratings_df_matrix.index.tolist()
         log('Info', "shape: {}".format(ratings_df_matrix.shape))
         log('Info', '\n{}'.format(ratings_df_matrix.head()))
@@ -55,7 +60,7 @@ class CollaborativeFiltering(object):
 
     def apply(self, method='svd'):
         feature_matrix = self.create_normalized_numpy_ratings()
-        save_data(feature_matrix, 'result/rating_demeaned.pkl')
+        save_data(feature_matrix, 'result/rating_demeaned_{}.pkl'.format(self.type))
 
         if method == 'svd':
             latent_df = self.get_svd_embeddings(feature_matrix, 100)
@@ -66,8 +71,8 @@ class CollaborativeFiltering(object):
             losses, latent_np = self.get_authoencoder_embedings(feature_df)
             latent_df = pd.DataFrame(latent_np, index=self.ids)
             log("Info", "shape: {}".format(latent_df.shape))
-            # save_embeddings(losses, 'result/collaborative_losses.pkl', 'pickle')
+            save_embeddings(losses, 'result/collaborative_losses_{}.pkl'.format(self.type), 'pickle')
         else:
             raise AssertionError("Please specify a correct method [svd, ae]")
 
-        # save_data(latent_df, 'result/collaborative_embeddings_{}.pkl'.format(method))
+        save_data(latent_df, 'result/collaborative_embeddings_{}_{}.pkl'.format(self.type, method))

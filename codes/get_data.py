@@ -3,6 +3,7 @@ import pandas as pd
 from helper import log, save_embeddings, save_data
 import os
 import ipdb
+from sklearn.model_selection import train_test_split
 
 
 def tags_to_panda(directory):
@@ -36,6 +37,17 @@ def rating_to_panda(directory):
 
     return ratings
 
+
+def rating_test(directory, percentage):
+    ratings = pd.read_csv(directory).drop(["timestamp"], axis=1)
+    train, test = train_test_split(ratings, test_size=percentage)
+    return train, test
+
+def select_test_rating(ratings, p):
+    top_movies = ratings['movieId'].value_counts().sort_values(ascending=True)
+    size = int(top_movies.shape[0] * (p / 10))
+    top_movies = top_movies[:size]
+    return ratings.loc[ratings['movieId'].isin(top_movies.index)]
 
 def movies_to_panda(directory):
     movies = pd.read_csv(directory)

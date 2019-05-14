@@ -11,12 +11,16 @@ def log(type, text):
 
 
 def load_df(path):
-    log('Info', "###### Loading df from file: {} ######".format(path))
+    # log('Info', "###### Loading df from file: {} ######".format(path))
     return pd.DataFrame(pd.read_pickle('result/{}'.format(path)))
 
+def load_data(path):
+    with open(path, 'rb') as fh:
+        data = pickle.load(fh)
+    return data
 
 def save_embeddings(df, path, file_format='csv'):
-    log('Info', "###### Saving embeddings to file: {} ######".format(path))
+    # log('Info', "###### Saving embeddings to file: {} ######".format(path))
     assert file_format in ['csv', 'pickle'], "unsupported format"
     if file_format == 'csv':
         df.to_csv(path, header=True, index=True)
@@ -25,7 +29,7 @@ def save_embeddings(df, path, file_format='csv'):
 
 
 def save_data(data, path):
-    log('Info', "###### Saving data to file: {} ######".format(path))
+    # log('Info', "###### Saving data to file: {} ######".format(path))
     with open(path, 'wb') as fh:
         pickle.dump(data, fh)
 

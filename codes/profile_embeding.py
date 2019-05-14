@@ -2,6 +2,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import ipdb
+from helper import save_embeddings
 
 
 class ProfileFiltering:
@@ -16,5 +17,5 @@ class ProfileFiltering:
 
         profile_df = pd.DataFrame(data=principalComponents
                                   , columns=['f1', 'f2', 'f3', 'f4', 'f5'])
-        # profile_df['userId'] = profile_df.index.values + 1
-        return profile_df
+
+        save_embeddings(profile_df, 'result/profile_embeddings_pca.pkl', 'pickle')
