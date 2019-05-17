@@ -259,17 +259,42 @@ class Main:
         return avg_user_rate
     ####
 
+    #### collaborative similarity ####
+    def calc_score_collaborative_base(self, item, user):
+        self.collaborative_similarity(item)
+        top_five_items = self.sim_items_collaborative.head(50)['item_id'].values
+
+        avg_movie_rate = self.get_avg_movie_rate(user, top_five_items)
+
+        if math.isnan(avg_movie_rate):
+            return self.get_mean_rating(user)
+
+        return avg_movie_rate
+
+    #### content similarity ####
+    def calc_score_content_base(self, item, user):
+        self.content_similarity(item)
+        top_five_items = self.sim_items_content.head(50)['item_id'].values
+
+        avg_movie_rate = self.get_avg_movie_rate(user, top_five_items)
+
+        if math.isnan(avg_movie_rate):
+            return self.get_mean_rating(user)
+
+        return avg_movie_rate
+    ####
+
     def recommender(self):
         for p in range(2, 11, 2):
             selected_test_rating = select_test_rating(self.ratings, p)
-            x = round(500 / selected_test_rating.shape[0], 4)
+            x = round(1000 / selected_test_rating.shape[0], 4)
             train, test = train_test_split(selected_test_rating, test_size=x)
 
             result = []
             def_perc = 0
             counter = 0
             for index, row in test.iterrows():
-                predict = self.calc_score_user_base(row['movieId'], row['userId'])
+                predict = self.calc_score_collaborative_base(row['movieId'], row['userId'])
                 result.append((round(predict, 1), row['rating']))
                 counter += 1
                 print("number of satisfied items for p={}: {} --- {}%".format(p, counter, def_perc))
@@ -298,8 +323,8 @@ if __name__ == "__main__":
 
     # app.recommender()
 
-    for item in range(2, 11, 2):
-        app.evaluate('result/back/rmsa/2/predict_test_data_{}.pkl'.format(item), item)
+    # for item in range(2, 11, 2):
+    #     app.evaluate('result/predict_test_data_{}.pkl'.format(item), item)
 
     # app.apply_item_emds()
     # app.apply_item_similarity()
